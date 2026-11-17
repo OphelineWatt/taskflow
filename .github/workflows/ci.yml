@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  COVERAGE_MIN: 75
+
 jobs:
   api:
     name: api
@@ -37,7 +40,28 @@ jobs:
         run: npm run format:check
       - name: Tests unitaires et couverture
         run: npm run test:coverage
+      - name: Vérifier la couverture (seuil ${{ env.COVERAGE_MIN }} %)
+        run: |
+          F=coverage/coverage-summary.json
+          LINES=$(jq -r '.total.lines.pct' "$F")
 
+          {
+            echo "### Couverture de l'API (Node ${{ matrix.node }})"
+            echo ""
+            echo "| Mesure | % |"
+            echo "|---|---|"
+            echo "| Lignes | $LINES % |"
+            echo "| Instructions | $(jq -r '.total.statements.pct' "$F") % |"
+            echo "| Fonctions | $(jq -r '.total.functions.pct' "$F") % |"
+            echo "| Branches | $(jq -r '.total.branches.pct' "$F") % |"
+            echo ""
+            echo "Seuil minimal (lignes) : $COVERAGE_MIN %"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if awk -v p="$LINES" -v min="$COVERAGE_MIN" 'BEGIN { exit !(p < min) }'; then
+            echo "::error title=Couverture insuffisante::lignes $LINES % < $COVERAGE_MIN %"
+            exit 1
+          fi
 
   api-integration:
     name: api-integration

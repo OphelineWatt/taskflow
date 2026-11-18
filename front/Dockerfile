@@ -20,7 +20,10 @@ COPY . .
 RUN npm run build
 
 # ---------- Étape 2 : servir le site avec Nginx -----------------------------
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
+# Correctifs de sécurité des paquets Alpine publiés depuis la construction de l'image de base :
+# sans cette ligne, Trivy (release.yml) trouve des CVE CRITICAL et bloque la release.
+RUN apk upgrade --no-cache
 
 # L'image Nginx remplace les variables ${...} des fichiers placés dans
 # /etc/nginx/templates/*.template et génère /etc/nginx/conf.d/default.conf.

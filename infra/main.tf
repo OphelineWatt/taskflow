@@ -150,11 +150,13 @@ resource "docker_container" "front" {
     aliases = ["front"]
   }
 
+  # start_period aligné sur le HEALTHCHECK de front/Dockerfile (sinon diff perpétuel)
   healthcheck {
-    test     = ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
-    interval = "10s"
-    timeout  = "3s"
-    retries  = 3
+    test         = ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+    interval     = "10s"
+    timeout      = "3s"
+    retries      = 3
+    start_period = "5s"
   }
 
   depends_on = [docker_container.api]

@@ -18,7 +18,7 @@
     "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^2.1.9",
     "eslint": "^10.15.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.8",
     "globals": "^17.14.0",
     "prettier": "^3.10.1",
     "vite": "^5.4.11",
